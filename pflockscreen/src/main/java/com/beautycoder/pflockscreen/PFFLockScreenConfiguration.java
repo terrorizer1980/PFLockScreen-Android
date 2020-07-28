@@ -1,6 +1,7 @@
 package com.beautycoder.pflockscreen;
 
 import android.content.Context;
+
 import androidx.annotation.IntDef;
 
 import java.io.Serializable;
@@ -25,6 +26,7 @@ public class PFFLockScreenConfiguration implements Serializable {
     private boolean mErrorAnimation = true;
     private boolean mNewCodeValidation = false;
     private String mNewCodeValidationTitle = "";
+    private boolean mGoNextWhenCodeCompleted = true;
 
     private PFFLockScreenConfiguration(Builder builder) {
         mLeftButton = builder.mLeftButton;
@@ -39,6 +41,7 @@ public class PFFLockScreenConfiguration implements Serializable {
         mErrorAnimation = builder.mErrorAnimation;
         mNewCodeValidation = builder.mNewCodeValidation;
         mNewCodeValidationTitle = builder.mNewCodeValidationTitle;
+        mGoNextWhenCodeCompleted = builder.mGoNextWhenCodeCompleted;
     }
 
     public String getLeftButton() {
@@ -85,6 +88,10 @@ public class PFFLockScreenConfiguration implements Serializable {
         return mNewCodeValidationTitle;
     }
 
+    public boolean goNextWhenCodeCompleted(){
+        return mGoNextWhenCodeCompleted;
+    }
+
     @PFLockScreenMode
     public int getMode() {
         return this.mMode;
@@ -104,10 +111,15 @@ public class PFFLockScreenConfiguration implements Serializable {
         private boolean mErrorAnimation = true;
         private boolean mNewCodeValidation = false;
         private String mNewCodeValidationTitle = "";
-
+        private boolean mGoNextWhenCodeCompleted = true;
 
         public Builder(Context context) {
             mTitle = context.getResources().getString(R.string.lock_screen_title_pf);
+        }
+
+        public Builder setGoNextWhenCodeCompleted(boolean mGoNextWhenCodeCompleted) {
+            mGoNextWhenCodeCompleted = mGoNextWhenCodeCompleted;
+            return this;
         }
 
         public Builder setTitle(String title) {
@@ -180,7 +192,9 @@ public class PFFLockScreenConfiguration implements Serializable {
 
     @Retention(SOURCE)
     @IntDef({MODE_CREATE, MODE_AUTH})
-    public @interface PFLockScreenMode {}
+    public @interface PFLockScreenMode {
+    }
+
     public static final int MODE_CREATE = 0;
     public static final int MODE_AUTH = 1;
 
