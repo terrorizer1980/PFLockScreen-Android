@@ -16,8 +16,9 @@ public class PFFLockScreenConfiguration implements Serializable {
 
     private String mLeftButton = "";
     private String mNextButton = "";
-    private boolean mUseFingerprint = false;
-    private boolean mAutoShowFingerprint = false;
+    private boolean mUseBiometric = false;
+    private boolean mAutoShowBiometric = false;
+    private int mBiometricBackground = -1;
     private String mTitle = "";
     private int mMode = MODE_AUTH;
     private int mCodeLength = 4;
@@ -31,8 +32,9 @@ public class PFFLockScreenConfiguration implements Serializable {
     private PFFLockScreenConfiguration(Builder builder) {
         mLeftButton = builder.mLeftButton;
         mNextButton = builder.mNextButton;
-        mUseFingerprint = builder.mUseFingerprint;
-        mAutoShowFingerprint = builder.mAutoShowFingerprint;
+        mUseBiometric = builder.mUseBiometric;
+        mAutoShowBiometric = builder.mAutoShowBiometric;
+        mBiometricBackground = builder.mBiometricBackground;
         mTitle = builder.mTitle;
         mMode = builder.mMode;
         mCodeLength = builder.mCodeLength;
@@ -52,12 +54,16 @@ public class PFFLockScreenConfiguration implements Serializable {
         return mNextButton;
     }
 
-    public boolean isUseFingerprint() {
-        return mUseFingerprint;
+    public boolean isUseBiometric() {
+        return mUseBiometric;
     }
 
-    public boolean isAutoShowFingerprint() {
-        return mAutoShowFingerprint;
+    public boolean isAutoShowBiometric() {
+        return mAutoShowBiometric;
+    }
+
+    public int getBiometricBackground() {
+        return mBiometricBackground;
     }
 
     public String getTitle() {
@@ -101,8 +107,9 @@ public class PFFLockScreenConfiguration implements Serializable {
 
         private String mLeftButton = "";
         private String mNextButton = "";
-        private boolean mUseFingerprint = false;
-        private boolean mAutoShowFingerprint = false;
+        private boolean mUseBiometric = false;
+        private boolean mAutoShowBiometric = false;
+        private int mBiometricBackground = -1;
         private String mTitle = "";
         private int mMode = 0;
         private int mCodeLength = 4;
@@ -137,13 +144,18 @@ public class PFFLockScreenConfiguration implements Serializable {
             return this;
         }
 
-        public Builder setUseFingerprint(boolean useFingerprint) {
-            mUseFingerprint = useFingerprint;
+        public Builder setUseBiometric(boolean useBiometric) {
+            mUseBiometric = useBiometric;
             return this;
         }
 
-        public Builder setAutoShowFingerprint(boolean autoShowFingerprint) {
-            mAutoShowFingerprint = autoShowFingerprint;
+        public Builder setAutoShowBiometric(boolean autoShowBiometric) {
+            mAutoShowBiometric = autoShowBiometric;
+            return this;
+        }
+
+        public Builder setBiometricBackground(int biometricBackground) {
+            mBiometricBackground = biometricBackground;
             return this;
         }
 
