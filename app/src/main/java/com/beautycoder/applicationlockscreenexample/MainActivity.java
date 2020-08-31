@@ -3,6 +3,7 @@ package com.beautycoder.applicationlockscreenexample;
 import androidx.lifecycle.Observer;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -10,7 +11,6 @@ import android.widget.Toast;
 import com.beautycoder.pflockscreen.PFFLockScreenConfiguration;
 import com.beautycoder.pflockscreen.fragments.PFLockScreenFragment;
 import com.beautycoder.pflockscreen.security.PFResult;
-import com.beautycoder.pflockscreen.security.PFSecurityManager;
 import com.beautycoder.pflockscreen.viewmodels.PFPinCodeViewModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 .setNewCodeValidation(true)
                 .setNewCodeValidationTitle("Please input code again")
                 .setAutoShowBiometric(true)
+                .setCanUseFaceUnlock(false)
                 .setUseBiometric(true);
         final PFLockScreenFragment fragment = new PFLockScreenFragment();
 
