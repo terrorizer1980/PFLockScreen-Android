@@ -17,6 +17,7 @@ public class PFFLockScreenConfiguration implements Serializable {
     private String mLeftButton = "";
     private String mNextButton = "";
     private boolean mUseBiometric = false;
+    private boolean mCanUseFaceUnlock = true;
     private boolean mAutoShowBiometric = false;
     private int mBiometricBackground = -1;
     private String mTitle = "";
@@ -33,6 +34,7 @@ public class PFFLockScreenConfiguration implements Serializable {
         mLeftButton = builder.mLeftButton;
         mNextButton = builder.mNextButton;
         mUseBiometric = builder.mUseBiometric;
+        mCanUseFaceUnlock = builder.mUseFaceUnlock;
         mAutoShowBiometric = builder.mAutoShowBiometric;
         mBiometricBackground = builder.mBiometricBackground;
         mTitle = builder.mTitle;
@@ -56,6 +58,10 @@ public class PFFLockScreenConfiguration implements Serializable {
 
     public boolean isUseBiometric() {
         return mUseBiometric;
+    }
+
+    public boolean isCanUseFaceUnlock() {
+        return mCanUseFaceUnlock;
     }
 
     public boolean isAutoShowBiometric() {
@@ -94,7 +100,7 @@ public class PFFLockScreenConfiguration implements Serializable {
         return mNewCodeValidationTitle;
     }
 
-    public boolean goNextWhenCodeCompleted(){
+    public boolean goNextWhenCodeCompleted() {
         return mGoNextWhenCodeCompleted;
     }
 
@@ -119,6 +125,7 @@ public class PFFLockScreenConfiguration implements Serializable {
         private boolean mNewCodeValidation = false;
         private String mNewCodeValidationTitle = "";
         private boolean mGoNextWhenCodeCompleted = true;
+        private boolean mUseFaceUnlock = true;
 
         public Builder(Context context) {
             mTitle = context.getResources().getString(R.string.lock_screen_title_pf);
@@ -151,6 +158,11 @@ public class PFFLockScreenConfiguration implements Serializable {
 
         public Builder setAutoShowBiometric(boolean autoShowBiometric) {
             mAutoShowBiometric = autoShowBiometric;
+            return this;
+        }
+
+        public Builder setCanUseFaceUnlock(boolean useFaceUnlock) {
+            mUseFaceUnlock = useFaceUnlock;
             return this;
         }
 

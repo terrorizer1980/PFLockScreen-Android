@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.lifecycle.Observer;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,11 +25,9 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 
 import com.beautycoder.pflockscreen.PFFLockScreenConfiguration;
 import com.beautycoder.pflockscreen.R;
@@ -46,6 +45,8 @@ public class PFLockScreenFragment extends Fragment {
 
     private static final String TAG = PFLockScreenFragment.class.getName();
 
+    private static final String FINGERPRINT_DIALOG_FRAGMENT_TAG = "FingerprintDialogFragment";
+
     private static final String INSTANCE_STATE_CONFIG
             = "com.beautycoder.pflockscreen.instance_state_config";
 
@@ -56,6 +57,8 @@ public class PFLockScreenFragment extends Fragment {
     private PFCodeView mCodeView;
     private TextView titleView;
 
+    private boolean mUseFingerPrintOnly = true;
+    private boolean mFingerprintHardwareDetected = false;
     private boolean mUseBiometricAuth = true;
     private boolean mBiometricAuthHardwareDetected = false;
     private boolean mIsCreateMode = false;
@@ -110,33 +113,52 @@ public class PFLockScreenFragment extends Fragment {
 
         mCodeView.setListener(mCodeListener);
 
-        if (!mUseBiometricAuth) {
-            mBiometricAuthButton.setVisibility(View.GONE);
-        }
 
+        mFingerprintHardwareDetected = isFingerprintApiAvailable(getContext());
 
         mRootView = view;
         applyConfiguration(mConfiguration);
 
-        boolean instantBiometricScan = mConfiguration.isUseBiometric() && mConfiguration.isAutoShowBiometric();
-        boolean createMode = mConfiguration.getMode() == PFFLockScreenConfiguration.MODE_CREATE;
-        BiometricManager bioManager = BiometricManager.from(getContext());
-        BiometricPrompt.AuthenticationCallback callback = createCallback();
-        bioAuth = new BiometricUIStarter(bioManager, getContext(), this, callback);
-        mBiometricAuthHardwareDetected = bioAuth.isBiometricAuthAvailable();
-        bioAuth.setTitle(getString(R.string.sign_in_pf));
+        if (!mUseBiometricAuth) {
+            mBiometricAuthButton.setVisibility(View.GONE);
+        }
 
-        if (mBiometricAuthHardwareDetected && instantBiometricScan && !createMode) {
-            bioAuth.setConfirmationRequired(true);
-            bioAuth.startUI();
-            int backgroundID = mConfiguration.getBiometricBackground();
-            if (backgroundID != -1) { //this will set a new view over the pin fragment which makes it easier to go back from this view
-                biometricView = inflater.inflate(backgroundID, container, false);
-                ((RelativeLayout)view.findViewById(R.id.fragment_pf)).addView(biometricView);
+        if (mUseFingerPrintOnly && !mFingerprintHardwareDetected) {
+            mBiometricAuthButton.setVisibility(View.GONE);
+        }
+
+
+        if (!mUseFingerPrintOnly) {
+
+            boolean instantBiometricScan = mConfiguration.isUseBiometric() && mConfiguration.isAutoShowBiometric();
+            boolean createMode = mConfiguration.getMode() == PFFLockScreenConfiguration.MODE_CREATE;
+            BiometricManager bioManager = BiometricManager.from(getContext());
+            BiometricPrompt.AuthenticationCallback callback = createCallback();
+            bioAuth = new BiometricUIStarter(bioManager, getContext(), this, callback);
+            mBiometricAuthHardwareDetected = bioAuth.isBiometricAuthAvailable();
+            bioAuth.setTitle(getString(R.string.sign_in_pf));
+
+            if (mBiometricAuthHardwareDetected && instantBiometricScan && !createMode) {
+                bioAuth.setConfirmationRequired(true);
+                bioAuth.startUI();
+                int backgroundID = mConfiguration.getBiometricBackground();
+                if (backgroundID != -1) { //this will set a new view over the pin fragment which makes it easier to go back from this view
+                    biometricView = inflater.inflate(backgroundID, container, false);
+                    ((RelativeLayout) view.findViewById(R.id.fragment_pf)).addView(biometricView);
+                }
             }
         }
 
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        if (!mIsCreateMode && mUseFingerPrintOnly && mConfiguration.isAutoShowBiometric() &&
+                isFingerprintApiAvailable(getActivity()) && isFingerprintsExists(getActivity())) {
+            mOnBiometricAuthClickListener.onClick(mBiometricAuthButton);
+        }
+        super.onStart();
     }
 
 
@@ -162,6 +184,7 @@ public class PFLockScreenFragment extends Fragment {
             mNextButton.setText(configuration.getNextButton());
         }
 
+        mUseFingerPrintOnly = !configuration.isCanUseFaceUnlock();
         mUseBiometricAuth = configuration.isUseBiometric();
         if (!mUseBiometricAuth) {
             mBiometricAuthButton.setVisibility(View.GONE);
@@ -232,6 +255,40 @@ public class PFLockScreenFragment extends Fragment {
     private final View.OnClickListener mOnBiometricAuthClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+
+            if (mUseFingerPrintOnly) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
+                        !isFingerprintApiAvailable(getActivity())) {
+                    return;
+                }
+
+                if (!isFingerprintsExists(getActivity())) {
+                    showNoBiometricAuthDialog();
+                    return;
+                }
+
+                final PFFingerprintAuthDialogFragment fragment
+                        = new PFFingerprintAuthDialogFragment();
+                fragment.show(getFragmentManager(), FINGERPRINT_DIALOG_FRAGMENT_TAG);
+                fragment.setAuthListener(new PFFingerprintAuthListener() {
+                    @Override
+                    public void onAuthenticated() {
+                        if (mLoginListener != null) {
+                            mLoginListener.onBiometricAuthSuccessful();
+                        }
+                        fragment.dismiss();
+                    }
+
+                    @Override
+                    public void onError() {
+                        if (mLoginListener != null) {
+                            mLoginListener.onBiometricAuthLoginFailed();
+                        }
+                    }
+                });
+                return;
+            }
+
             if (bioAuth.isBiometricAuthAvailable()) {
                 bioAuth.setConfirmationRequired(false);
                 bioAuth.startUI();
@@ -271,6 +328,14 @@ public class PFLockScreenFragment extends Fragment {
 
         mDeleteButton.setEnabled(false);
 
+    }
+
+    private boolean isFingerprintApiAvailable(Context context) {
+        return FingerprintManagerCompat.from(context).isHardwareDetected();
+    }
+
+    private boolean isFingerprintsExists(Context context) {
+        return FingerprintManagerCompat.from(context).hasEnrolledFingerprints();
     }
 
     private void showNoBiometricAuthDialog() {
