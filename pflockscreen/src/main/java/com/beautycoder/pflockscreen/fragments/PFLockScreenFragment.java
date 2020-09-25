@@ -404,7 +404,15 @@ public class PFLockScreenFragment extends Fragment {
     };
 
     private void goNextCreate() {
+        if (!mConfiguration.isNewCodeValidation() && mCodeCreateListener.onPinCodeEnteredFirst(mCode)) {
+            cleanCode();
+            return;
+        }
         if (mConfiguration.isNewCodeValidation() && TextUtils.isEmpty(mCodeValidation)) {
+            if (mCodeCreateListener.onPinCodeEnteredFirst(mCode)) {
+                cleanCode();
+                return;
+            }
             mCodeValidation = mCode;
             cleanCode();
             titleView.setText(mConfiguration.getNewCodeValidationTitle());
@@ -577,6 +585,11 @@ public class PFLockScreenFragment extends Fragment {
      * Pin Code create callback interface.
      */
     public interface OnPFLockScreenCodeCreateListener {
+        /**
+         * Called when the PIN code has been entered for the first time.
+         * @return true if the PIN code is not allowed. In this case user will not go to the first step (confirm PIN or configure PIN)
+         */
+        boolean onPinCodeEnteredFirst(String pinCode);
 
         /**
          * Callback method for pin code creation.
