@@ -30,6 +30,16 @@
             android:text="@string/lock_screen_title_pf"
             android:theme="@style/PFLockScreenTitleTextStyle" />
 
+        <TextView
+            android:id="@+id/subtitle_text_view"
+            style="?pf_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:text="@string/lock_screen_title_pf"
+            android:theme="@style/PFLockScreenTitleTextStyle" />
+
         <com.beautycoder.pflockscreen.views.PFCodeView
             android:id="@+id/code_view"
             android:layout_width="wrap_content"
@@ -218,6 +228,7 @@
 
                 <TextView
                     android:id="@+id/button_left"
+                    style="?pf_hint"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
                     android:layout_gravity="center"
@@ -226,8 +237,7 @@
                     android:focusable="true"
                     android:gravity="center"
                     android:text="@string/forgot_pf"
-                    android:theme="@style/PFLockScreenHintTextStyle"
-                    style="?pf_hint"/>
+                    android:theme="@style/PFLockScreenHintTextStyle" />
             </FrameLayout>
 
             <FrameLayout
@@ -297,12 +307,12 @@
 
         <Button
             android:id="@+id/button_next"
+            style="?pf_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/next_pf"
-            android:visibility="visible"
             android:theme="@style/PFLockScreenNextTextStyle"
-            style="?pf_next"/>
+            android:visibility="visible" />
 
     </LinearLayout>
 </RelativeLayout>

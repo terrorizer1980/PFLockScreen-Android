@@ -1,12 +1,6 @@
 package com.beautycoder.pflockscreen.fragments;
 
 import android.app.AlertDialog;
-
-import androidx.annotation.NonNull;
-import androidx.biometric.BiometricManager;
-import androidx.biometric.BiometricPrompt;
-import androidx.lifecycle.Observer;
-
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,9 +19,13 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.biometric.BiometricManager;
+import androidx.biometric.BiometricPrompt;
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 
 import com.beautycoder.pflockscreen.PFFLockScreenConfiguration;
 import com.beautycoder.pflockscreen.R;
@@ -56,6 +54,7 @@ public class PFLockScreenFragment extends Fragment {
     private Button mNextButton;
     private PFCodeView mCodeView;
     private TextView titleView;
+    private TextView subTitleView;
 
     private boolean mUseFingerPrintOnly = true;
     private boolean mFingerprintHardwareDetected = false;
@@ -173,6 +172,13 @@ public class PFLockScreenFragment extends Fragment {
         }
         titleView = mRootView.findViewById(R.id.title_text_view);
         titleView.setText(configuration.getTitle());
+        subTitleView = mRootView.findViewById(R.id.subtitle_text_view);
+        if (configuration.getSubTitle().isEmpty()) {
+            subTitleView.setVisibility(View.GONE);
+        } else {
+            subTitleView.setVisibility(View.VISIBLE);
+            subTitleView.setText(configuration.getSubTitle());
+        }
         if (TextUtils.isEmpty(configuration.getLeftButton())) {
             mLeftButton.setVisibility(View.GONE);
         } else {
@@ -587,6 +593,7 @@ public class PFLockScreenFragment extends Fragment {
     public interface OnPFLockScreenCodeCreateListener {
         /**
          * Called when the PIN code has been entered for the first time.
+         *
          * @return true if the PIN code is not allowed. In this case user will not go to the first step (confirm PIN or configure PIN)
          */
         boolean onPinCodeEnteredFirst(String pinCode);

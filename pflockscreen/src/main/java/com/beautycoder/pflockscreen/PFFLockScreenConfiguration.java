@@ -21,6 +21,7 @@ public class PFFLockScreenConfiguration implements Serializable {
     private boolean mAutoShowBiometric = false;
     private int mBiometricBackground = -1;
     private String mTitle = "";
+    private String mSubTitle = "";
     private int mMode = MODE_AUTH;
     private int mCodeLength = 4;
     private boolean mClearCodeOnError = false;
@@ -38,6 +39,7 @@ public class PFFLockScreenConfiguration implements Serializable {
         mAutoShowBiometric = builder.mAutoShowBiometric;
         mBiometricBackground = builder.mBiometricBackground;
         mTitle = builder.mTitle;
+        mSubTitle = builder.mSubTitle;
         mMode = builder.mMode;
         mCodeLength = builder.mCodeLength;
         mClearCodeOnError = builder.mClearCodeOnError;
@@ -74,6 +76,10 @@ public class PFFLockScreenConfiguration implements Serializable {
 
     public String getTitle() {
         return mTitle;
+    }
+
+    public String getSubTitle() {
+        return mSubTitle;
     }
 
     public int getCodeLength() {
@@ -117,6 +123,7 @@ public class PFFLockScreenConfiguration implements Serializable {
         private boolean mAutoShowBiometric = false;
         private int mBiometricBackground = -1;
         private String mTitle = "";
+        private String mSubTitle = "";
         private int mMode = 0;
         private int mCodeLength = 4;
         private boolean mClearCodeOnError = false;
@@ -138,6 +145,11 @@ public class PFFLockScreenConfiguration implements Serializable {
 
         public Builder setTitle(String title) {
             mTitle = title;
+            return this;
+        }
+
+        public Builder setSubTitle(String subTitle) {
+            mSubTitle = subTitle;
             return this;
         }
 
